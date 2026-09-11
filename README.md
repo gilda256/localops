@@ -1,3 +1,25 @@
+# LocalOps - Service Business Management Platform
+
+## Team Members
+- Gilda (Team Lead)
+
+## Project Description
+LocalOps is a web application for small service businesses to manage customers, appointments, and service requests in one place.
+
+## Tech Stack
+- Next.js (App Router)
+- TypeScript
+- Tailwind CSS
+- MongoDB Atlas
+- Auth.js or Clerk
+
+## Setup
+1. Clone the repository
+2. Run `npm install`
+3. Run `npm run dev`
+
+---
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
