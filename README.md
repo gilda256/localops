@@ -1,10 +1,10 @@
 # LocalOps
 
-LocalOps is a full-stack web application for small service businesses to manage customers and appointments.
+LocalOps is a full-stack web application for small service businesses to manage customers and appointments in one place.
 
 ## Purpose
 
-LocalOps helps small service providers organize customer information and appointment schedules in one place.
+LocalOps helps small service providers organize customer information and appointment schedules through a simple dashboard.
 
 ## Target Users
 
@@ -19,15 +19,26 @@ LocalOps helps small service providers organize customer information and appoint
 - Appointment management
 - Dashboard summaries
 - Responsive design
+- Form validation and error handling
 
 ## Tech Stack
 
 - Next.js with App Router
 - TypeScript
+- Tailwind CSS
 - MongoDB Atlas
 - Auth.js or Clerk
-- Tailwind CSS
 - Vercel
+
+## Project Routes
+
+- `/`
+- `/login`
+- `/register`
+- `/dashboard`
+- `/customers`
+- `/appointments`
+- `/appointments/new`
 
 ## Team Members
 
@@ -35,8 +46,15 @@ LocalOps helps small service providers organize customer information and appoint
 
 ## Local Development
 
+Install the dependencies:
+
 ```bash
 npm install
+```
+
+Start the development server:
+
+```bash
 npm run dev
 ```
 
@@ -45,3 +63,11 @@ Open http://localhost:3000 in your browser.
 ## Project Status
 
 Initial project setup and MVP route structure are complete.
+
+## Future Improvements
+
+- Customer and appointment CRUD operations
+- Authentication
+- Appointment reminders
+- Calendar view
+- Business reports
