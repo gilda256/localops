@@ -46,6 +46,7 @@ export default function AppointmentsPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [updatingAppointmentId, setUpdatingAppointmentId] = useState("");
 
   useEffect(() => {
     let isCurrent = true;
@@ -108,6 +109,50 @@ export default function AppointmentsPage() {
     );
   }
 
+  async function handleStatusChange(
+    appointment: Appointment,
+    status: Appointment["status"],
+  ) {
+    if (status === appointment.status) {
+      return;
+    }
+
+    setMessage("");
+    setUpdatingAppointmentId(appointment._id);
+
+    try {
+      const response = await fetch(`/api/appointments/${appointment._id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status }),
+      });
+
+      const data: { message?: string; appointment?: Appointment } =
+        await response.json();
+
+      if (!response.ok || !data.appointment) {
+        setMessage(data.message || "Unable to update appointment status.");
+        return;
+      }
+
+      setAppointments((currentAppointments) =>
+        currentAppointments.map((currentAppointment) =>
+          currentAppointment._id === data.appointment?._id
+            ? data.appointment
+            : currentAppointment,
+        ),
+      );
+
+      setMessage("Appointment status updated successfully.");
+    } catch {
+      setMessage("Unable to update appointment status. Please try again.");
+    } finally {
+      setUpdatingAppointmentId("");
+    }
+  }
+
   return (
     <main className="min-h-screen bg-slate-50 px-6 py-10">
       <section className="mx-auto max-w-6xl">
@@ -115,16 +160,18 @@ export default function AppointmentsPage() {
           <p className="text-sm font-semibold uppercase tracking-wide text-blue-700">
             LocalOps
           </p>
+
           <h1 className="mt-2 text-3xl font-bold text-slate-900">
             Appointments
           </h1>
+
           <p className="mt-2 text-slate-600">
             View and manage your upcoming appointments.
           </p>
         </header>
 
         {message && (
-          <p className="mt-6 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-800">
+          <p className="mt-6 rounded-lg bg-slate-100 px-4 py-3 text-sm text-slate-700">
             {message}
           </p>
         )}
@@ -135,6 +182,7 @@ export default function AppointmentsPage() {
           ) : appointments.length === 0 ? (
             <div>
               <p className="text-slate-600">No appointments created yet.</p>
+
               <a
                 href="/appointments/new"
                 className="mt-4 inline-flex rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
@@ -154,21 +202,49 @@ export default function AppointmentsPage() {
                       <h2 className="text-lg font-semibold text-slate-950">
                         {appointment.title}
                       </h2>
+
                       <p className="mt-1 text-sm font-medium text-slate-700">
                         {getCustomerName(appointment.customerId)}
                       </p>
+
                       <p className="mt-2 text-sm text-slate-600">
                         {formatAppointmentDate(appointment.scheduledAt)}
                       </p>
                     </div>
 
-                    <span
-                      className={`inline-flex w-fit rounded-full px-3 py-1 text-xs font-semibold capitalize ${statusClasses(
-                        appointment.status,
-                      )}`}
-                    >
-                      {appointment.status}
-                    </span>
+                    <div className="flex w-full items-center gap-2 sm:w-auto">
+                      <span
+                        className={`inline-flex w-fit rounded-full px-3 py-1 text-xs font-semibold capitalize ${statusClasses(
+                          appointment.status,
+                        )}`}
+                      >
+                        {appointment.status}
+                      </span>
+
+                      <label
+                        className="sr-only"
+                        htmlFor={`status-${appointment._id}`}
+                      >
+                        Update appointment status
+                      </label>
+
+                      <select
+                        id={`status-${appointment._id}`}
+                        value={appointment.status}
+                        onChange={(event) => {
+                          void handleStatusChange(
+                            appointment,
+                            event.target.value as Appointment["status"],
+                          );
+                        }}
+                        disabled={updatingAppointmentId === appointment._id}
+                        className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-800 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        <option value="scheduled">Scheduled</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                      </select>
+                    </div>
                   </div>
 
                   {appointment.notes && (
