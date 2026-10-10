@@ -26,8 +26,15 @@ export default function CustomersPage() {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [editPhone, setEditPhone] = useState("");
+  const [editNotes, setEditNotes] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [deletingCustomerId, setDeletingCustomerId] = useState("");
 
-    useEffect(() => {
+  useEffect(() => {
     let isCurrent = true;
 
     fetch("/api/customers")
@@ -95,6 +102,114 @@ export default function CustomersPage() {
       setMessage("Unable to create customer. Please try again.");
     } finally {
       setIsSubmitting(false);
+    }
+  }
+
+  function startEditing(customer: Customer) {
+    setMessage("");
+    setEditingCustomer(customer);
+    setEditName(customer.name);
+    setEditEmail(customer.email ?? "");
+    setEditPhone(customer.phone ?? "");
+    setEditNotes(customer.notes ?? "");
+  }
+
+  function cancelEditing() {
+    setEditingCustomer(null);
+    setEditName("");
+    setEditEmail("");
+    setEditPhone("");
+    setEditNotes("");
+  }
+
+  async function handleEditSubmit(event: SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!editingCustomer) {
+      return;
+    }
+
+    setMessage("");
+    setIsSaving(true);
+
+    try {
+      const response = await fetch(`/api/customers/${editingCustomer._id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: editName,
+          email: editEmail,
+          phone: editPhone,
+          notes: editNotes,
+        }),
+      });
+
+      const data: { message?: string; customer?: Customer } =
+        await response.json();
+
+      if (!response.ok || !data.customer) {
+        setMessage(data.message || "Unable to update customer.");
+        return;
+      }
+
+      setCustomers((currentCustomers) =>
+        currentCustomers.map((customer) =>
+          customer._id === data.customer?._id
+            ? (data.customer as Customer)
+            : customer,
+        ),
+      );
+
+      cancelEditing();
+      setMessage("Customer updated successfully.");
+    } catch {
+      setMessage("Unable to update customer. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  async function handleDelete(customer: Customer) {
+    const confirmed = window.confirm(
+      `Delete ${customer.name}? This action cannot be undone.`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setMessage("");
+    setDeletingCustomerId(customer._id);
+
+    try {
+      const response = await fetch(`/api/customers/${customer._id}`, {
+        method: "DELETE",
+      });
+
+      const data: { message?: string } = await response.json();
+
+      if (!response.ok) {
+        setMessage(data.message || "Unable to delete customer.");
+        return;
+      }
+
+      setCustomers((currentCustomers) =>
+        currentCustomers.filter(
+          (currentCustomer) => currentCustomer._id !== customer._id,
+        ),
+      );
+
+      if (editingCustomer?._id === customer._id) {
+        cancelEditing();
+      }
+
+      setMessage("Customer deleted successfully.");
+    } catch {
+      setMessage("Unable to delete customer. Please try again.");
+    } finally {
+      setDeletingCustomerId("");
     }
   }
 
@@ -205,22 +320,130 @@ export default function CustomersPage() {
                     key={customer._id}
                     className="rounded-xl border border-slate-200 p-4"
                   >
-                    <h3 className="font-semibold text-slate-950">
-                      {customer.name}
-                    </h3>
+                    {editingCustomer?._id === customer._id ? (
+                      <form
+                        onSubmit={handleEditSubmit}
+                        className="space-y-4"
+                      >
+                        <label className="block">
+                          <span className="text-sm font-medium text-slate-700">
+                            Name
+                          </span>
+                          <input
+                            type="text"
+                            value={editName}
+                            onChange={(event) =>
+                              setEditName(event.target.value)
+                            }
+                            className="mt-1 w-full rounded-lg border border-slate-400 bg-white px-3 py-2 text-slate-900 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                            required
+                          />
+                        </label>
 
-                    {(customer.email || customer.phone) && (
-                      <p className="mt-1 text-sm text-slate-600">
-                        {[customer.email, customer.phone]
-                          .filter(Boolean)
-                          .join(" · ")}
-                      </p>
-                    )}
+                        <label className="block">
+                          <span className="text-sm font-medium text-slate-700">
+                            Email
+                          </span>
+                          <input
+                            type="email"
+                            value={editEmail}
+                            onChange={(event) =>
+                              setEditEmail(event.target.value)
+                            }
+                            className="mt-1 w-full rounded-lg border border-slate-400 bg-white px-3 py-2 text-slate-900 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                          />
+                        </label>
 
-                    {customer.notes && (
-                      <p className="mt-3 text-sm leading-6 text-slate-700">
-                        {customer.notes}
-                      </p>
+                        <label className="block">
+                          <span className="text-sm font-medium text-slate-700">
+                            Phone
+                          </span>
+                          <input
+                            type="tel"
+                            value={editPhone}
+                            onChange={(event) =>
+                              setEditPhone(event.target.value)
+                            }
+                            className="mt-1 w-full rounded-lg border border-slate-400 bg-white px-3 py-2 text-slate-900 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                          />
+                        </label>
+
+                        <label className="block">
+                          <span className="text-sm font-medium text-slate-700">
+                            Notes
+                          </span>
+                          <textarea
+                            value={editNotes}
+                            onChange={(event) =>
+                              setEditNotes(event.target.value)
+                            }
+                            className="mt-1 min-h-24 w-full rounded-lg border border-slate-400 bg-white px-3 py-2 text-slate-900 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                          />
+                        </label>
+
+                        <div className="flex gap-3">
+                          <button
+                            type="submit"
+                            disabled={isSaving}
+                            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+                          >
+                            {isSaving ? "Saving..." : "Save changes"}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={cancelEditing}
+                            disabled={isSaving}
+                            className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </form>
+                    ) : (
+                      <>
+                        <div className="flex items-start justify-between gap-4">
+                          <div>
+                            <h3 className="font-semibold text-slate-950">
+                              {customer.name}
+                            </h3>
+
+                            {(customer.email || customer.phone) && (
+                              <p className="mt-1 text-sm text-slate-600">
+                                {[customer.email, customer.phone]
+                                  .filter(Boolean)
+                                  .join(" · ")}
+                              </p>
+                            )}
+                          </div>
+
+                          <div className="flex shrink-0 gap-2">
+                            <button
+                              type="button"
+                              onClick={() => startEditing(customer)}
+                              disabled={deletingCustomerId === customer._id}
+                              className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDelete(customer)}
+                              disabled={deletingCustomerId === customer._id}
+                              className="rounded-lg bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                              {deletingCustomerId === customer._id
+                                ? "Deleting..."
+                                : "Delete"}
+                            </button>
+                          </div>
+                        </div>
+
+                        {customer.notes && (
+                          <p className="mt-3 text-sm leading-6 text-slate-700">
+                            {customer.notes}
+                          </p>
+                        )}
+                      </>
                     )}
                   </article>
                 ))}
