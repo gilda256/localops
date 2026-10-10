@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 interface Customer {
@@ -196,18 +197,27 @@ export default function AppointmentsPage() {
   return (
     <main className="min-h-screen bg-slate-50 px-6 py-10">
       <section className="mx-auto max-w-6xl">
-        <header>
-          <p className="text-sm font-semibold uppercase tracking-wide text-blue-700">
-            LocalOps
-          </p>
+        <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-wide text-blue-700">
+              LocalOps
+            </p>
 
-          <h1 className="mt-2 text-3xl font-bold text-slate-900">
-            Appointments
-          </h1>
+            <h1 className="mt-2 text-3xl font-bold text-slate-900">
+              Appointments
+            </h1>
 
-          <p className="mt-2 text-slate-600">
-            View and manage your upcoming appointments.
-          </p>
+            <p className="mt-2 text-slate-600">
+              View and manage your upcoming appointments.
+            </p>
+          </div>
+
+          <Link
+            href="/appointments/new"
+            className="inline-flex w-fit rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-200"
+          >
+            New appointment
+          </Link>
         </header>
 
         {message && (
@@ -223,12 +233,12 @@ export default function AppointmentsPage() {
             <div>
               <p className="text-slate-600">No appointments created yet.</p>
 
-              <a
+              <Link
                 href="/appointments/new"
-                className="mt-4 inline-flex rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                className="mt-4 inline-flex rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-200"
               >
                 Create your first appointment
-              </a>
+              </Link>
             </div>
           ) : (
             <div className="space-y-4">
