@@ -1,4 +1,5 @@
 import Link from "next/link";
+
 import { auth } from "@/auth";
 import LogoutButton from "@/components/logout-button";
 
@@ -7,22 +8,33 @@ export default async function SiteNavigation() {
 
   return (
     <nav className="border-b border-slate-200 bg-white">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link
-          href="/"
-          className="text-lg font-bold text-slate-900"
-        >
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-4">
+        <Link href="/" className="text-lg font-bold text-slate-900">
           LocalOps
         </Link>
 
-        <div className="flex items-center gap-4 text-sm">
+        <div className="flex flex-wrap items-center gap-3 text-sm">
           {session?.user ? (
             <>
               <Link
                 href="/dashboard"
-                className="text-slate-800 hover:text-blue-700"
+                className="rounded-lg px-3 py-2 font-medium text-slate-800 hover:bg-slate-100 hover:text-blue-700"
               >
                 Dashboard
+              </Link>
+
+              <Link
+                href="/customers"
+                className="rounded-lg px-3 py-2 font-medium text-slate-800 hover:bg-slate-100 hover:text-blue-700"
+              >
+                Customers
+              </Link>
+
+              <Link
+                href="/appointments"
+                className="rounded-lg px-3 py-2 font-medium text-slate-800 hover:bg-slate-100 hover:text-blue-700"
+              >
+                Appointments
               </Link>
 
               <LogoutButton />
@@ -31,7 +43,7 @@ export default async function SiteNavigation() {
             <>
               <Link
                 href="/login"
-                className="text-slate-700 hover:text-blue-600"
+                className="rounded-lg px-3 py-2 font-medium text-slate-700 hover:bg-slate-100 hover:text-blue-600"
               >
                 Log in
               </Link>
