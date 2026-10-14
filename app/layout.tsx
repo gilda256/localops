@@ -26,7 +26,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="flex min-h-full flex-col">
         <SiteNavigation />
-        {children}
+         <div className="flex flex-1 flex-col">{children}</div>
+
+        <footer className="border-t border-slate-200 bg-white px-6 py-5">
+          <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-1 text-center text-sm text-slate-600">
+            <p>© 2026 LocalOps</p>
+            <p>Service management for local businesses.</p>
+          </div>
+        </footer>
       </body>
     </html>
   );
