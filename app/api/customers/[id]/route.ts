@@ -148,11 +148,29 @@ export async function DELETE(
 
   try {
     const db = await getDatabase();
+    const customerId = new ObjectId(id);
 
-    const result = await db.collection<CustomerDocument>("customers").deleteOne({
-      _id: new ObjectId(id),
+    const appointment = await db.collection("appointments").findOne({
+      customerId,
       userId: session.user.id,
     });
+
+    if (appointment) {
+      return NextResponse.json(
+        {
+          message:
+            "This customer has appointments and cannot be deleted.",
+        },
+        { status: 409 },
+      );
+    }
+
+    const result = await db
+      .collection<CustomerDocument>("customers")
+      .deleteOne({
+        _id: customerId,
+        userId: session.user.id,
+      });
 
     if (result.deletedCount === 0) {
       return NextResponse.json(
