@@ -279,40 +279,48 @@ export default function AppointmentsPage() {
                       </label>
 
                       <select
-                        id={`status-${appointment._id}`}
-                        value={appointment.status}
-                        onChange={(event) => {
-                          void handleStatusChange(
-                            appointment,
-                            event.target.value as Appointment["status"],
-                          );
-                        }}
-                        disabled={
-                          updatingAppointmentId === appointment._id ||
-                          deletingAppointmentId === appointment._id
-                        }
-                        className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-800 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 disabled:cursor-not-allowed disabled:opacity-60"
-                      >
-                        <option value="scheduled">Scheduled</option>
-                        <option value="completed">Completed</option>
-                        <option value="cancelled">Cancelled</option>
-                      </select>
+                      id={`status-${appointment._id}`}
+                      value={appointment.status}
+                      onChange={(event) => {
+                      void handleStatusChange(
+                      appointment,
+                      event.target.value as Appointment["status"],
+                     );
+                     }}
+                    disabled={
+                    updatingAppointmentId === appointment._id ||
+                    deletingAppointmentId === appointment._id
+                    }
+                   className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-800 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 disabled:cursor-not-allowed disabled:opacity-60"
+                   >
+                   <option value="scheduled">Scheduled</option>
+                   <option value="completed">Completed</option>
+                   <option value="cancelled">Cancelled</option>
+                   </select>
 
-                      <button
-                        type="button"
-                        onClick={() => {
-                          void handleDelete(appointment);
-                        }}
-                        disabled={
-                          deletingAppointmentId === appointment._id ||
-                          updatingAppointmentId === appointment._id
-                        }
-                        className="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-200 disabled:cursor-not-allowed disabled:opacity-60"
-                      >
-                        {deletingAppointmentId === appointment._id
-                          ? "Deleting..."
-                          : "Delete"}
-                      </button>
+                  <Link
+                  href={`/appointments/${appointment._id}/edit`}
+                  className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-200"
+                 >
+                 Edit
+                </Link>
+
+                <button
+               type="button"
+              onClick={() => {
+             void handleDelete(appointment);
+             }}
+            disabled={
+            deletingAppointmentId === appointment._id ||
+           updatingAppointmentId === appointment._id
+           }
+           className="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-200 disabled:cursor-not-allowed disabled:opacity-60"
+         >
+         {deletingAppointmentId === appointment._id
+         ? "Deleting..."
+         : "Delete"}
+         </button>
+                        
                     </div>
                   </div>
 
