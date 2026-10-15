@@ -121,6 +121,25 @@ For deployment, configure the following Vercel environment variables:
 MONGODB_URI
 AUTH_SECRET
 ```
+## Lighthouse Results
+
+Lighthouse audits were performed on the deployed application.
+
+### Mobile
+Category: Score 
+Performance: 88 
+Accessibility:100 
+Best Practices: 100 
+SEO:100 
+
+### Desktop
+ Category: Score 
+Performance:100 
+Accessibility:100 
+Best Practices: 100
+SEO: 100 
+
+The strongest categories are Accessibility, Best Practices, and SEO, which received perfect scores on both mobile and desktop audits. The weakest result is Mobile Performance at 88, while Desktop Performance received 100. The lower mobile score reflects the stricter mobile-device and network simulation used by Lighthouse.
 
 Both variables are configured as protected secrets for the Production and Preview environments.
 
